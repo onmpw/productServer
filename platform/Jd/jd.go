@@ -5,18 +5,13 @@ import (
 	"fmt"
 	"github.com/onmpw/JYGO/config"
 	"github.com/onmpw/JYGO/model"
+	"productServer/http"
+	"productServer/include"
 	"reflect"
-	"refundServer/http"
-	"refundServer/include"
 	"strconv"
 	"strings"
 )
 
-var OrderStatus = map[string]string {
-	"WAIT_SELLER_SEND":"WAIT_SELLER_STOCK_OUT",
-	"WAIT_BUYER_CONFIRM":"WAIT_GOODS_RECEIVE_CONFIRM",
-	"TRADE_SUCCESS":"FINISHED_L",
-}
 var platform = "J"
 
 func (o *OrderInfo) BuildData(orderStatus string) error{
@@ -30,11 +25,11 @@ func (o *OrderInfo) BuildData(orderStatus string) error{
 		if shop.Type != platform {
 			continue
 		}
-		var t *include.RefundThirdSyncTime
-		count := model.Read(new(include.RefundThirdSyncTime)).Filter("platform",platform).Filter("company_id",shop.Cid).Filter("sid",shop.Sid).Count()
+		var t *include.ProductThirdSyncTime
+		count := model.Read(new(include.ProductThirdSyncTime)).Filter("platform",platform).Filter("company_id",shop.Cid).Filter("sid",shop.Sid).Count()
 
 		if count >= 1 {
-			err := model.Read(new(include.RefundThirdSyncTime)).Filter("platform", platform).Filter("company_id", shop.Cid).Filter("sid", shop.Sid).GetOne(&t)
+			err := model.Read(new(include.ProductThirdSyncTime)).Filter("platform", platform).Filter("company_id", shop.Cid).Filter("sid", shop.Sid).GetOne(&t)
 			if err != nil {
 				return err
 			}
@@ -49,6 +44,8 @@ func (o *OrderInfo) BuildData(orderStatus string) error{
 		getParam := map[string]string{
 			"cid": strconv.Itoa(shop.Cid),
 			"sid": strconv.Itoa(shop.Sid),
+			"page": "1",
+			"pageSize":"200",
 			"startDate": start,
 			"endDate":end,
 		}
@@ -72,11 +69,11 @@ func (o *OrderInfo) BuildData(orderStatus string) error{
 func getOrder(param map[string]string,models *[]*OrderTrade)(num int,err error ){
 	jsons, err := json.Marshal(param)
 	if err != nil {
-		fmt.Printf("京东订单同步错误：%v",err)
+		fmt.Printf("京东商品同步错误：%v",err)
 		return 0,err
 	}
 
-	trades,_ := http.Get(string(jsons),"Provider\\OrderService@getRefund",config.Conf.C("jd_api_host"))
+	trades,_ := http.Get(string(jsons),"Provider\\OrderService@getProduct",config.Conf.C("jd_api_host"))
 
 	*models = parseOrderList(trades)
 
@@ -99,8 +96,7 @@ func parseOrderList(value interface{}) (orderList []*OrderTrade) {
 			trade.Id = int(r["id"].(float64))
 			trade.Cid = int(r["cid"].(float64))
 			trade.Sid = int(r["sid"].(float64))
-			trade.Oid = r["oid"].(string)
-			trade.Aid = r["aid"].(string)
+			trade.Pid = r["pid"].(string)
 			trade.Response = r["response"].(string)
 			trade.Created = r["created"].(string)
 			trade.Modified = r["modified"].(string)
@@ -117,6 +113,7 @@ func (o *OrderInfo) Send() bool {
 		jsons, err := json.Marshal(o.order)
 
 		if err != nil {
+			fmt.Printf("京东商品同步错误：%v",err)
 			return false
 		}
 
@@ -126,11 +123,12 @@ func (o *OrderInfo) Send() bool {
 	data := map[string]string {
 		"platform":"jd",
 		"order_status":o.orderStatus,
-		"refund_list":order,
+		"product_list":order,
 	}
 
 	jsons, err := json.Marshal(data)
 	if err != nil {
+		fmt.Printf("京东商品同步错误：%v",err)
 		return false
 	}
 	go o.updateSyncTime()
@@ -150,7 +148,7 @@ func (o *OrderInfo) getMaxTime(trades []*OrderTrade,sid int) {
 }
 
 func (o *OrderInfo) updateSyncTime() {
-	var syncTime include.RefundThirdSyncTime
+	var syncTime include.ProductThirdSyncTime
 
 	syncTime.Platform = platform
 	syncTime.Updatetime = include.Now()

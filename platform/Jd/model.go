@@ -2,8 +2,7 @@ package Jd
 
 type OrderTrade struct {
 	Id				int
-	Oid				string
-	Aid 			string
+	Pid				string
 	Response		string
 	Cid				int
 	Created			string
@@ -21,7 +20,7 @@ type OrderInfo struct {
 }
 
 func (o *OrderTrade) TableName() string {
-	return "jdp_jd_order_trade"
+	return "jdp_jd_product_trade"
 }
 
 func (o *OrderTrade) Connection() string {

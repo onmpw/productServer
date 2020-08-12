@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"productServer/include"
 	"productServer/platform/Alibb"
+	"productServer/platform/Jd"
 	"productServer/platform/Pdd"
 	"strconv"
 	"syscall"
@@ -44,14 +45,14 @@ func main() {
 		//			AddOrUp:  make(map[int]bool),
 		//			SidToCid: make(map[int]int),
 		//		}},
-		//"jd":{
-		//		Platform:    "jd",
-		//		OrderStatus: "",
-		//		OrderInfo: &Jd.OrderInfo{
-		//			SyncTime: make(map[int]string),
-		//			AddOrUp:  make(map[int]bool),
-		//			SidToCid: make(map[int]int),
-		//		}},
+		"jd":{
+				Platform:    "jd",
+				OrderStatus: "",
+				OrderInfo: &Jd.OrderInfo{
+					SyncTime: make(map[int]string),
+					AddOrUp:  make(map[int]bool),
+					SidToCid: make(map[int]int),
+				}},
 	}
 
 	handleSignal()
