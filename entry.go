@@ -37,14 +37,14 @@ func main() {
 					AddOrUp:  make(map[int]bool),
 					SidToCid: make(map[int]int),
 				}},
-		//"1688":{
-		//		Platform:    "1688",
-		//		OrderStatus: "",
-		//		OrderInfo: &Alibb.OrderInfo{
-		//			SyncTime: make(map[int]string),
-		//			AddOrUp:  make(map[int]bool),
-		//			SidToCid: make(map[int]int),
-		//		}},
+		"1688":{
+				Platform:    "1688",
+				OrderStatus: "",
+				OrderInfo: &Alibb.OrderInfo{
+					SyncTime: make(map[int]string),
+					AddOrUp:  make(map[int]bool),
+					SidToCid: make(map[int]int),
+				}},
 		"jd":{
 				Platform:    "jd",
 				OrderStatus: "",

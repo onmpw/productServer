@@ -2,8 +2,7 @@ package Alibb
 
 type OrderTrade struct {
 	Id				int
-	Oid				string
-	Aid 			string
+	Pid				string
 	Response		string
 	Cid				int
 	Created			string
@@ -21,5 +20,5 @@ type OrderInfo struct {
 }
 
 func (o *OrderTrade) TableName() string {
-	return "jdp_alibb_order_refund_trade"
+	return "jdp_alibb_product_trade"
 }

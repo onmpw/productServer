@@ -4,16 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/onmpw/JYGO/model"
-	"refundServer/http"
-	"refundServer/include"
+	"productServer/http"
+	"productServer/include"
 	"strings"
 )
 
-var OrderStatus = map[string]string {
-	"WAIT_SELLER_SEND":"waitsellersend",
-	"WAIT_BUYER_CONFIRM":"waitbuyerreceive",
-	"TRADE_SUCCESS":"success",
-}
 var platform = "A"
 
 func (o *OrderInfo) BuildData(orderStatus string) error{
@@ -28,11 +23,11 @@ func (o *OrderInfo) BuildData(orderStatus string) error{
 		if shop.Type != platform {
 			continue
 		}
-		var t *include.RefundThirdSyncTime
-		count := model.Read(new(include.RefundThirdSyncTime)).Filter("platform",platform).Filter("company_id",shop.Cid).Filter("sid",shop.Sid).Count()
+		var t *include.ProductThirdSyncTime
+		count := model.Read(new(include.ProductThirdSyncTime)).Filter("platform",platform).Filter("company_id",shop.Cid).Filter("sid",shop.Sid).Count()
 
 		if count >= 1 {
-			err := model.Read(new(include.RefundThirdSyncTime)).Filter("platform", platform).Filter("company_id", shop.Cid).Filter("sid", shop.Sid).GetOne(&t)
+			err := model.Read(new(include.ProductThirdSyncTime)).Filter("platform", platform).Filter("company_id", shop.Cid).Filter("sid", shop.Sid).GetOne(&t)
 			if err != nil {
 				return err
 			}
@@ -75,7 +70,7 @@ func (o *OrderInfo) Send() bool {
 	data := map[string]string {
 		"platform":"1688",
 		"order_status":o.orderStatus,
-		"refund_list":order,
+		"product_list":order,
 	}
 
 	jsons, err := json.Marshal(data)
@@ -99,7 +94,7 @@ func (o *OrderInfo) getMaxTime(trades []*OrderTrade,sid int) {
 }
 
 func (o *OrderInfo) updateSyncTime() {
-	var syncTime include.RefundThirdSyncTime
+	var syncTime include.ProductThirdSyncTime
 
 	syncTime.Platform = platform
 	syncTime.Updatetime = include.Now()
