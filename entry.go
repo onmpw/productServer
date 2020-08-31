@@ -12,6 +12,7 @@ import (
 	"productServer/platform/Alibb"
 	"productServer/platform/Jd"
 	"productServer/platform/Pdd"
+	"productServer/platform/Dy"
 	"strconv"
 	"syscall"
 	"time"
@@ -53,6 +54,14 @@ func main() {
 					AddOrUp:  make(map[int]bool),
 					SidToCid: make(map[int]int),
 				}},
+		"dy":{
+			Platform:    "dy",
+			OrderStatus: "",
+			OrderInfo: &Dy.OrderInfo{
+				SyncTime: make(map[int]string),
+				AddOrUp:  make(map[int]bool),
+				SidToCid: make(map[int]int),
+			}},
 	}
 
 	handleSignal()
