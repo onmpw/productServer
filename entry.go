@@ -127,7 +127,7 @@ func Init() bool{
 
 func ModelInit() {
 	model.Init()
-	model.RegisterModel(new(Pdd.OrderTrade), new(include.ShopInfo), new(include.ProductThirdSyncTime),new(Alibb.OrderTrade))
+	model.RegisterModel(new(Pdd.OrderTrade), new(include.ShopInfo), new(include.ProductThirdSyncTime),new(Alibb.OrderTrade),new(Dy.OrderTrade))
 }
 
 func ProcessInit(pidFile string) bool{
